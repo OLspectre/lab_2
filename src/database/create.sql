@@ -12,7 +12,7 @@ CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title NVARCHAR(255) NOT NULL,
     description TEXT,
-    status DEFAULT "pending",
+    status ENUM("pending", "completed") DEFAULT "pending",
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES users(id)
-)
+);
