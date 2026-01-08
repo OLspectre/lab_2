@@ -1,0 +1,27 @@
+{
+  "name": "lab_2",
+  "version": "1.0.0",
+  "description": "RESTful API with Node.js, Express, MySQL and that includes authorization and security considerations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OLspectre/lab_2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/OLspectre/lab_2/issues"
+  },
+  "homepage": "https://github.com/OLspectre/lab_2#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mysql2": "^3.16.0",
+    "nodemon": "^3.1.11"
+  }
+}
