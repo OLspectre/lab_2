@@ -1,10 +1,10 @@
 import express from "express";
-import { validateTask, validateId } from "../middleswares/validation.js";
-import { createTask, getAllTasks, getTaskById } from "../models/taskModel.js";
+import { validateTask, validateUserId, validateParamId } from "../middleswares/validation.js";
+import { createTask, getAllTasks, getTaskById, updateTask } from "../models/taskModel.js";
 export const router = express.Router();
 
 
-router.get("/:id", validateId, async (req, res, next) => {
+router.get("/:id", validateParamId, async (req, res, next) => {
 
     try {
         const { id } = req.params;
@@ -36,7 +36,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.post("/", validateTask, async (req, res, next) => {
+router.post("/", validateTask, validateUserId, async (req, res, next) => {
     try {
         const result = await createTask(req.body); // Recieves SQL metadata, not actual created task
         const task = {
@@ -48,5 +48,22 @@ router.post("/", validateTask, async (req, res, next) => {
         res.status(201).json({ message: "Successfully added a new task", task });
     } catch (error) {
         next(error)
+    }
+});
+
+router.put("/:id", validateTask, validateParamId, async (req, res, next) => {
+
+    try {
+        const { id } = req.params;
+
+        const result = await updateTask(id, req.body);
+        if (result.affectedRows === 0) {
+            return next({ status: 404, message: "No task with specified id was found" });
+        }
+        const updatedTask = await getTaskById(id);
+        res.status(200).json(updatedTask);
+
+    } catch (error) {
+        next(error);
     }
 });

@@ -2,6 +2,24 @@
 
 import { db } from "../database/connection.js";
 
+async function updateTask(id, data) {
+
+    const sql = `
+        UPDATE
+            tasks
+        SET
+            title = ?,
+            description = ?,
+            status = ?
+        WHERE
+            id = ?
+        `;
+
+    const values = [data.title, data.description, data.status, id]
+    const [result] = await db.execute(sql, values)
+    return result;
+};
+
 async function getTaskById(id) {
     const sql = `
     SELECT 
@@ -33,4 +51,4 @@ async function createTask(taskData) {
 };
 
 
-export { createTask, getAllTasks, getTaskById };
+export { createTask, getAllTasks, getTaskById, updateTask };

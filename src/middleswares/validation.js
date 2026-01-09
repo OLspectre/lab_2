@@ -1,29 +1,38 @@
 
-
-const validateId = (req, res, next) => {
-    const { id } = req.params;
-
-    if (isNaN(id) || id <= 0) {
-        return next({ status: 400, message: "id must be a valid integer" });
-    }
-    next()
-};
-
-
-const validateTask = (req, res, next) => {
-    const { title, userId } = req.body;
+// Validation for PUT, DELETE, GET:id
+const validateUserId = (req, res, next) => {
+    const { userId } = req.body;
 
     const parsedId = parseInt(userId);
 
-    if (!title || title.trim().length === 0) {
-        return next({ status: 400, message: "Title is required" });
+    if (isNaN(parsedId) || parsedId <= 0) {
+        return next({ status: 400, message: "body userId must be a positive valid integer" });
     }
 
-    if (!userId || isNaN(parsedId) || parsedId <= 0) {
-        return next({ status: 400, message: "A valid user id is required" })
-    }
     req.body.userId = parsedId;
     next();
 };
 
-export { validateTask, validateId };
+// Validation för PUT, DELETE, GET :id 
+const validateParamId = (req, res, next) => {
+    const { id } = req.params;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId) || parsedId <= 0) {
+        return next({ status: 400, message: "URL id must be a positive valid integer" });
+    }
+    req.params.id = parsedId;
+    next();
+};
+
+
+const validateTask = (req, res, next) => {
+    const { title, description, status } = req.body;
+
+    if (!title || title.trim().length === 0 || !description || !status) {
+        return next({ status: 400, message: "One or more required fields missing" });
+    }
+    next();
+};
+
+export { validateTask, validateParamId, validateUserId };
