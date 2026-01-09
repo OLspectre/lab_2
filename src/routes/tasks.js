@@ -1,8 +1,19 @@
 import express from "express";
 import { validateTask } from "../middleswares/validation.js";
-import { createTask } from "../models/taskModel.js";
+import { createTask, getAllTasks } from "../models/taskModel.js";
 export const router = express.Router();
 
+
+router.get("/", async (req, res, next) => {
+    try {
+        const tasks = await getAllTasks();
+        console.log(tasks);
+        res.status(200).json({ message: "Retrieved all tasks:", tasks });
+
+    } catch (error) {
+        next(error);
+    }
+});
 
 router.post("/", validateTask, async (req, res, next) => {
     try {
