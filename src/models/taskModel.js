@@ -2,6 +2,18 @@
 
 import { db } from "../database/connection.js";
 
+async function deleteTask(id) {
+    const sql = `
+        DELETE from
+    tasks
+        WHERE
+    id = ?
+    `;
+
+    const [result] = await db.execute(sql, [id])
+    return result;
+}
+
 async function updateTask(id, data) {
 
     const sql = `
@@ -51,4 +63,4 @@ async function createTask(taskData) {
 };
 
 
-export { createTask, getAllTasks, getTaskById, updateTask };
+export { createTask, getAllTasks, getTaskById, updateTask, deleteTask };

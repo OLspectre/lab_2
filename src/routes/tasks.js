@@ -1,6 +1,6 @@
 import express from "express";
 import { validateTask, validateUserId, validateParamId } from "../middleswares/validation.js";
-import { createTask, getAllTasks, getTaskById, updateTask } from "../models/taskModel.js";
+import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
 export const router = express.Router();
 
 
@@ -65,5 +65,21 @@ router.put("/:id", validateTask, validateParamId, async (req, res, next) => {
 
     } catch (error) {
         next(error);
+    }
+});
+
+router.delete("/:id", validateParamId, async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const deletedTask = getTaskById(id);
+
+        const result = await deleteTask(id);
+
+        if (result.affectedRows === 1 || result.affectedRows > 0) {
+            console.log(deletedTask);
+            res.status(200).json({ message: "Task deleted successfully" });
+        }
+    } catch (error) {
+        next(error)
     }
 });
