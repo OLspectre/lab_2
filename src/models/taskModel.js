@@ -2,6 +2,20 @@
 
 import { db } from "../database/connection.js";
 
+async function getTaskById(id) {
+    const sql = `
+    SELECT 
+        * 
+    FROM 
+        tasks 
+    WHERE 
+        id = ?
+    `;
+
+    const [result] = await db.execute(sql, [id]);
+    return result[0];
+}
+
 async function getAllTasks() {
     const sql = ` SELECT * FROM tasks`;
 
@@ -19,4 +33,4 @@ async function createTask(taskData) {
 };
 
 
-export { createTask, getAllTasks };
+export { createTask, getAllTasks, getTaskById };

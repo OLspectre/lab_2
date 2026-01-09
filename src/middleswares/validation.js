@@ -1,5 +1,15 @@
 
 
+const validateId = (req, res, next) => {
+    const { id } = req.params;
+
+    if (isNaN(id) || id <= 0) {
+        return next({ status: 400, message: "id must be a valid integer" });
+    }
+    next()
+};
+
+
 const validateTask = (req, res, next) => {
     const { title, userId } = req.body;
 
@@ -16,4 +26,4 @@ const validateTask = (req, res, next) => {
     next();
 };
 
-export { validateTask };
+export { validateTask, validateId };
