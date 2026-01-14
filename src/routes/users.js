@@ -6,17 +6,18 @@ import jwt from "jsonwebtoken";
 
 
 // /login default route
-router.post("/login", async (req, res, next) => {
+router.post("/login", (req, res, next) => {
     console.log("login route");
     const username = req.body.username;
     const password = req.body.password;
 
     let jwtToken;
     try {
+
         jwtToken = login(username, password);
 
     } catch (error) {
-        next(error);
+        return next(error);
     }
 
     res.json({
@@ -29,14 +30,18 @@ router.post("/login", async (req, res, next) => {
 
 
 function login(username, password) {
+    console.log(username, password);
+
     if (username !== "admin" || password !== "password123") {
-        throw new Error("User and password does not match");
+        const error = new Error("User and password does not match");
+        error.status = 401;
+        throw error;
     }
 
     const payload = {
         iss: "Issue id",
         sub: username,
-        iat: Date.now,
+        iat: 900,
         username,
     }
 
