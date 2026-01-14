@@ -1,5 +1,17 @@
 
 // Validation for PUT, DELETE, GET:id
+
+const validateLoginInput = (req, res, next) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        const error = new Error("username or password is missing");
+        error.status = 400;
+        return next(error);
+    }
+    next();
+};
+
 const validateUserId = (req, res, next) => {
     const { userId } = req.body;
 
@@ -35,4 +47,4 @@ const validateTask = (req, res, next) => {
     next();
 };
 
-export { validateTask, validateParamId, validateUserId };
+export { validateTask, validateParamId, validateUserId, validateLoginInput };

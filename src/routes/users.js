@@ -1,12 +1,12 @@
 import express from "express";
-import { validateTask, validateUserId, validateParamId } from "../middleswares/validation.js";
+import { validateTask, validateUserId, validateParamId, validateLoginInput } from "../middleswares/validation.js";
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
 export const router = express.Router();
 import jwt from "jsonwebtoken";
 
 
 // /login default route
-router.post("/login", (req, res, next) => {
+router.post("/login", validateLoginInput, (req, res, next) => {
     console.log("login route");
     const username = req.body.username;
     const password = req.body.password;
@@ -52,6 +52,10 @@ function login(username, password) {
     const token = jwt.sign(payload, "SPECIAL KEY", options);
     return token;
 };
+
+// Create validateLoginInput function for validation.js to check credentials
+
+
 
 // router.get("/authorized", async (req, res, next) => {
 //     console.log("protected route");
