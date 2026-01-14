@@ -57,8 +57,11 @@ router.put("/:id", validateTask, validateParamId, async (req, res, next) => {
         const { id } = req.params;
 
         const result = await updateTask(id, req.body);
-        if (result.affectedRows === 0) {
-            return next({ status: 404, message: "No task with specified id was found" });
+
+        if (!result) {
+            const error = new Error("No task with specified id was found");
+            error.status = 404;
+            throw error;
         }
         const updatedTask = await getTaskById(id);
         res.status(200).json(updatedTask);
@@ -71,14 +74,16 @@ router.put("/:id", validateTask, validateParamId, async (req, res, next) => {
 router.delete("/:id", validateParamId, async (req, res, next) => {
     try {
         const { id } = req.params;
-        const deletedTask = getTaskById(id);
+        const taskToDelete = await getTaskById(id);
 
-        const result = await deleteTask(id);
-
-        if (result.affectedRows === 1 || result.affectedRows > 0) {
-            console.log(deletedTask);
-            res.status(200).json({ message: "Task deleted successfully" });
+        if (!taskToDelete) {
+            const error = new Error("Task not found");
+            error.status = 404;
+            throw error;
         }
+        await deleteTask(id);
+        res.status(200).json({ message: "Task deleted successfully" });
+
     } catch (error) {
         next(error)
     }
