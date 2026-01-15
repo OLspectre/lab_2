@@ -42,7 +42,6 @@ function login(username, password) {
     const payload = {
         iss: "Issue id",
         sub: username,
-        iat: 900,
         username,
     }
 
