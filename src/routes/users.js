@@ -32,11 +32,11 @@ router.post("/login", validateLoginInput, async (req, res, next) => {
 
 
 async function login(username, password) {
-    console.log(username, password);
+    console.log(`username: ${username} password: ${password}`);
     const user = await findUserByUsername(username);
 
     if (!user || user.password !== password) {
-        if (user) console.log("user found but incorrect password");
+        if (user) console.log("user found but incorrect password"); //Only for debug
 
         const error = new Error("User credentials are invalid"); // Checking if user with username is in hte database + password
         error.status = 401;
@@ -59,9 +59,14 @@ async function login(username, password) {
 };
 
 
+
+// Endedpoint for tesing authorization only --> Use authenticateJWT to wanted task endpoints
 router.get("/authorized", authenticateJWT, async (req, res, next) => {
     console.log("protected route");
 
-    res.json({ mesasge: "You entered restricted area" })
+    res.status(200).json({
+        mesasge: "You entered restricted area",
+        loggedIn: req.user
+    });
 });
 

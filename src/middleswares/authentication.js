@@ -1,18 +1,24 @@
 import jwt from "jsonwebtoken";
+import { getTaskById } from "../models/taskModel.js";
 
 // Authenticate JWT from headers
 export function authenticateJWT(req, res, next) {
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization.replace("Bearer ", "");
 
-    if (!token) {
+    if (!authHeader) {
         const error = new Error("JWT token is missing");
         error.status = 401; // not authorized
         next(error);
     }
+    const token = authHeader.replace("Bearer ", "");
 
     try {
         const payload = jwt.verify(token, "SPECIAL KEY");
+        console.log(payload);
+
         req.user = payload;
+        console.log("User is authenticated correctly");
+
         next()
     } catch (err) { // TokenExpiredError
         if (err.name === "TokenExpiredError") {
@@ -24,5 +30,29 @@ export function authenticateJWT(req, res, next) {
         }
         next(err);
     }
-}
+};
 
+export async function authorizeTaskOwner(req, res, next) {
+    console.log("trying to check ids");
+
+    try {
+        const { id } = req.params;
+        console.log("first ID:", id);
+        const userId = req.user.id;
+        console.log("current user", userId);
+
+
+        const task = await getTaskById(id);
+
+        if (task.user_id !== userId) {
+            const error = new Error("You are forbidden to access this task");
+            error.status = 403;
+            throw error;
+        }
+        console.log("ID of user matches task's user_id");
+        req.task = task;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

@@ -1,10 +1,11 @@
 import express from "express";
 import { validateTask, validateUserId, validateParamId } from "../middleswares/validation.js";
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
+import { authenticateJWT, authorizeTaskOwner } from "../middleswares/authentication.js";
 export const router = express.Router();
 
 
-router.get("/:id", validateParamId, async (req, res, next) => {
+router.get("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
 
     try {
         const { id } = req.params;
@@ -51,7 +52,7 @@ router.post("/", validateTask, validateUserId, async (req, res, next) => {
     }
 });
 
-router.put("/:id", validateTask, validateParamId, async (req, res, next) => {
+router.put("/:id", validateTask, validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
 
     try {
         const { id } = req.params;
@@ -71,7 +72,7 @@ router.put("/:id", validateTask, validateParamId, async (req, res, next) => {
     }
 });
 
-router.delete("/:id", validateParamId, async (req, res, next) => {
+router.delete("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
     try {
         const { id } = req.params;
         const taskToDelete = await getTaskById(id);

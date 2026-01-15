@@ -13,6 +13,5 @@ export async function findUserByUsername(username) {
         `;
 
     const [result] = await db.execute(sql, [username])
-    console.log("user found in db:", result[0]);
     return result[0];
 }
