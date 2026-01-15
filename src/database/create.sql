@@ -28,3 +28,9 @@ INSERT INTO tasks (title, description, status, user_id) VALUES
 ("Async Awakening", "Refactor a blocking function to embrace the non-blocking power of Async/Await.", "completed", 3),
 ("The CRUD Ritual", "Complete the cycle of creation, reading, updating, and ultimate destruction.", "pending", 3),
 ("Complete the cycle of creation, reading, updating, and ultimate destruction.", "Forge a secure token to allow passage through the protected API gates.", "pending", 3);
+
+
+ALTER TABLE users
+ADD COLUMN role NVARCHAR(25) DEFAULT "user";
+
+UPDATE users SET role = "admin" WHERE id = 1;
