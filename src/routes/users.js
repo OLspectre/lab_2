@@ -2,12 +2,13 @@ import express from "express";
 import { validateTask, validateUserId, validateParamId, validateLoginInput } from "../middleswares/validation.js";
 import { authenticateJWT } from "../middleswares/authentication.js";
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
+import { findUserByUsername } from "../models/userModel.js";
 export const router = express.Router();
 import jwt from "jsonwebtoken";
 
 
 // /login default route
-router.post("/login", validateLoginInput, (req, res, next) => {
+router.post("/login", validateLoginInput, async (req, res, next) => {
     console.log("login route");
     const username = req.body.username;
     const password = req.body.password;
@@ -15,7 +16,7 @@ router.post("/login", validateLoginInput, (req, res, next) => {
     let jwtToken;
     try {
 
-        jwtToken = login(username, password);
+        jwtToken = await login(username, password);
 
     } catch (error) {
         return next(error);
@@ -30,23 +31,27 @@ router.post("/login", validateLoginInput, (req, res, next) => {
 });
 
 
-function login(username, password) {
+async function login(username, password) {
     console.log(username, password);
+    const user = await findUserByUsername(username);
 
-    if (username !== "admin" || password !== "password123") {
-        const error = new Error("User and password does not match");
+    if (!user || user.password !== password) {
+        if (user) console.log("user found but incorrect password");
+
+        const error = new Error("User credentials are invalid"); // Checking if user with username is in hte database + password
         error.status = 401;
         throw error;
     }
 
     const payload = {
+        id: user.id,
         iss: "Issue id",
         sub: username,
         username,
     }
 
     const options = {
-        expiresIn: "1s"
+        expiresIn: "15m"
     }
 
     const token = jwt.sign(payload, "SPECIAL KEY", options);
