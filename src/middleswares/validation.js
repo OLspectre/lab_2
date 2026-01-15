@@ -1,4 +1,3 @@
-
 // Validation for PUT, DELETE, GET:id
 
 const validateLoginInput = (req, res, next) => {

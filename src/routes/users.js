@@ -1,5 +1,6 @@
 import express from "express";
 import { validateTask, validateUserId, validateParamId, validateLoginInput } from "../middleswares/validation.js";
+import { authenticateJWT } from "../middleswares/authentication.js";
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
 export const router = express.Router();
 import jwt from "jsonwebtoken";
@@ -53,13 +54,10 @@ function login(username, password) {
     return token;
 };
 
-// Create validateLoginInput function for validation.js to check credentials
 
+router.get("/authorized", authenticateJWT, async (req, res, next) => {
+    console.log("protected route");
 
-
-// router.get("/authorized", async (req, res, next) => {
-//     console.log("protected route");
-
-//     res.json({ mesasge: "You entered restricted area" })
-// });
+    res.json({ mesasge: "You entered restricted area" })
+});
 
