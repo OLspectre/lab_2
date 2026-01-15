@@ -46,7 +46,7 @@ function login(username, password) {
     }
 
     const options = {
-        expiresIn: "15m"
+        expiresIn: "1s"
     }
 
     const token = jwt.sign(payload, "SPECIAL KEY", options);

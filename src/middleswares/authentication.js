@@ -12,9 +12,17 @@ export function authenticateJWT(req, res, next) {
 
     try {
         const payload = jwt.verify(token, "SPECIAL KEY");
-    } catch (err) {
+        req.user = payload;
+        next()
+    } catch (err) { // TokenExpiredError
+        if (err.name === "TokenExpiredError") {
+            err.status = 401;
+            err.message = "jwt token expired";
+        } else { //JsonWebTokenError
+            err.status = 401;
+            err.message = "jwt token is missing or invalid";
+        }
         next(err);
     }
-    next()
 }
 
