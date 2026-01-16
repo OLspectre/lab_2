@@ -3,7 +3,8 @@ import { getTaskById } from "../models/taskModel.js";
 
 // Authenticate JWT from headers
 export function authenticateJWT(req, res, next) {
-    const authHeader = req.headers.authorization.replace("Bearer ", "");
+    const authHeader = req.headers.authorization;
+    console.log(authHeader);
 
     if (!authHeader) {
         const error = new Error("JWT token is missing");
@@ -13,7 +14,8 @@ export function authenticateJWT(req, res, next) {
     const token = authHeader.replace("Bearer ", "");
 
     try {
-        const payload = jwt.verify(token, "SPECIAL KEY");
+        const secretKey = process.env.SECRET_KEY;
+        const payload = jwt.verify(token, secretKey);
         console.log(payload);
 
         req.user = payload;
@@ -21,13 +23,15 @@ export function authenticateJWT(req, res, next) {
 
         next()
     } catch (err) { // TokenExpiredError
+
+        let status = 401;
+        let message = "jwt token is missing or invalid"
+
         if (err.name === "TokenExpiredError") {
-            err.status = 401;
-            err.message = "jwt token expired";
-        } else { //JsonWebTokenError
-            err.status = 401;
-            err.message = "jwt token is missing or invalid";
+            message = "jwt token expired";
         }
+        err.status = status;
+        err.message = message;
         next(err);
     }
 };
