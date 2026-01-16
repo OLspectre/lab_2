@@ -11,18 +11,18 @@ const validateLoginInput = (req, res, next) => {
     next();
 };
 
-const validateUserId = (req, res, next) => {
-    const { userId } = req.body;
+// const validateUserId = (req, res, next) => {
+//     const { userId } = req.body;
 
-    const parsedId = parseInt(userId);
+//     const parsedId = parseInt(userId);
 
-    if (isNaN(parsedId) || parsedId <= 0) {
-        return next({ status: 400, message: "body userId must be a positive valid integer" });
-    }
+//     if (isNaN(parsedId) || parsedId <= 0) {
+//         return next({ status: 400, message: "body userId must be a positive valid integer" });
+//     }
 
-    req.body.userId = parsedId;
-    next();
-};
+//     req.body.userId = parsedId;
+//     next();
+// };
 
 // Validation för PUT, DELETE, GET :id 
 const validateParamId = (req, res, next) => {
@@ -46,4 +46,4 @@ const validateTask = (req, res, next) => {
     next();
 };
 
-export { validateTask, validateParamId, validateUserId, validateLoginInput };
+export { validateTask, validateParamId, validateLoginInput };

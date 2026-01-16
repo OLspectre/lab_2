@@ -1,7 +1,6 @@
 import express from "express";
-import { validateTask, validateUserId, validateParamId, validateLoginInput } from "../middleswares/validation.js";
+import { validateLoginInput } from "../middleswares/validation.js";
 import { authenticateJWT } from "../middleswares/authentication.js";
-import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
 import { findUserByUsername } from "../models/userModel.js";
 export const router = express.Router();
 import jwt from "jsonwebtoken";
@@ -54,7 +53,7 @@ async function login(username, password) {
         expiresIn: "15m"
     }
 
-    const token = jwt.sign(payload, "SPECIAL KEY", options);
+    const token = jwt.sign(payload, process.env.SECRET_KEY, options);
     return token;
 };
 

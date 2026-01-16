@@ -1,6 +1,9 @@
 import express from "express";
-import { validateTask, validateUserId, validateParamId } from "../middleswares/validation.js";
+//Validation logic
+import { validateTask, validateParamId } from "../middleswares/validation.js";
+// Database operations of tasks
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
+// Authentication
 import { authenticateJWT, authorizeTaskOwner } from "../middleswares/authentication.js";
 export const router = express.Router();
 
@@ -15,7 +18,9 @@ router.get("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (
 
 
         if (!task) {
-            return next({ status: 404, message: "No task with specified id was found" });
+            const error = new Error("No task with specified id was found")
+            error.status = 404;
+            next(error)
         }
         console.log(task);
         res.status(200).json(task);
@@ -30,19 +35,24 @@ router.get("/", async (req, res, next) => {
     try {
         const tasks = await getAllTasks();
         console.log(tasks);
-        res.status(200).json({ message: "Retrieved all tasks:", tasks });
+        res.status(200).json(tasks);
 
     } catch (error) {
         next(error);
     }
 });
 
-router.post("/", validateTask, validateUserId, async (req, res, next) => {
+router.post("/", authenticateJWT, validateTask, async (req, res, next) => {
     try {
-        const result = await createTask(req.body); // Recieves SQL metadata, not actual created task
+        const taskData = {
+            ...req.body,
+            userId: req.user.id
+        }
+
+        const result = await createTask(taskData); // Recieves SQL metadata, not actual created task
         const task = {
             id: result.insertId,
-            ...req.body
+            ...taskData
         };
         console.log(task);
 

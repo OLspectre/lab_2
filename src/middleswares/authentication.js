@@ -4,18 +4,22 @@ import { getTaskById } from "../models/taskModel.js";
 // Authenticate JWT from headers
 export function authenticateJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-    console.log(authHeader);
 
     if (!authHeader) {
-        const error = new Error("JWT token is missing");
+        const error = new Error("Authentication credentials are required");
         error.status = 401; // not authorized
-        next(error);
+        return next(error);
     }
     const token = authHeader.replace("Bearer ", "");
+    console.log("TOKEN:", token);
 
     try {
+        console.log("Trying with token");
+
         const secretKey = process.env.SECRET_KEY;
-        const payload = jwt.verify(token, secretKey);
+        console.log("secret key:", secretKey);
+
+        const payload = jwt.verify(token.trim(), secretKey.trim());
         console.log(payload);
 
         req.user = payload;
