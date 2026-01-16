@@ -22,12 +22,17 @@ const validateParamId = (req, res, next) => {
     next();
 };
 
-
 const validateTask = (req, res, next) => {
     const { title, description, status } = req.body;
+    let missingFields = [];
 
-    if (!title || title.trim().length === 0 || !description || !status) {
-        const error = new Error("One or more required fields missing");
+    if (!title || title.trim().length === 0) missingFields.push("title");
+    if (!description || description.trim().length === 0) missingFields.push("description");
+    if (!status || status.trim().length === 0) missingFields.push("status");
+
+    if (missingFields.length > 0) {
+        const message = `Missing or empty fields: ${missingFields.join(", ")}`;
+        const error = new Error(message);
         error.status = 400;
         return next(error);
     }

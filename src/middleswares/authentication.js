@@ -59,7 +59,6 @@ export async function authorizeTaskOwner(req, res, next) {
 export async function athorizeRolePermissions(req, res, next) {
     console.log("checking admin permissions");
     const role = req.user.role;
-    console.log(role);
 
     if (role !== "admin") {
         const error = new Error("You don't have permission to access this resource");

@@ -7,16 +7,16 @@ import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "..
 import { authenticateJWT, authorizeTaskOwner, athorizeRolePermissions } from "../middleswares/authentication.js";
 export const router = express.Router();
 
-
+//GET TASK BY ID
 router.get("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
     try {
-        console.log(req.task);
         res.status(200).json(req.task);
     } catch (error) {
         next(error);
     }
 });
 
+// GET ALL TASKS
 router.get("/", authenticateJWT, athorizeRolePermissions, async (req, res, next) => {
     try {
         const tasks = await getAllTasks();
@@ -25,13 +25,13 @@ router.get("/", authenticateJWT, athorizeRolePermissions, async (req, res, next)
             error.status = 400;
             next(error);
         }
-        console.log(tasks);
         res.status(200).json(tasks);
     } catch (error) {
         next(error);
     }
 });
 
+// CREATE A NEW TASK
 router.post("/", authenticateJWT, validateTask, async (req, res, next) => {
     try {
         const taskData = {
@@ -44,7 +44,6 @@ router.post("/", authenticateJWT, validateTask, async (req, res, next) => {
             id: result.insertId,
             ...taskData
         };
-        console.log(task);
 
         res.status(201).json({ message: "Successfully added a new task", task });
     } catch (error) {
@@ -52,26 +51,21 @@ router.post("/", authenticateJWT, validateTask, async (req, res, next) => {
     }
 });
 
-router.put("/:id", validateTask, validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
+// REPLACE DATA OF A TASK
+router.put("/:id", authenticateJWT, authorizeTaskOwner, validateTask, validateParamId, async (req, res, next) => {
 
     try {
         const { id } = req.params;
+        await updateTask(id, req.body);
 
-        const result = await updateTask(id, req.body);
-
-        if (!result) {
-            const error = new Error(`No task with id:${id} was found`);
-            error.status = 404;
-            throw error;
-        }
         const updatedTask = await getTaskById(id);
         res.status(200).json(updatedTask);
-
     } catch (error) {
         next(error);
     }
 });
 
+// DELETE A TASK
 router.delete("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
     try {
         await deleteTask(req.task.id);

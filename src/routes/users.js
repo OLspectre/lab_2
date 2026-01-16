@@ -6,7 +6,7 @@ export const router = express.Router();
 import jwt from "jsonwebtoken";
 
 
-// /login default route
+// LOGIN ROUTE DEFAULT
 router.post("/login", validateLoginInput, async (req, res, next) => {
     console.log("login route");
     const username = req.body.username;
