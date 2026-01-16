@@ -40,7 +40,7 @@ export async function authorizeTaskOwner(req, res, next) {
 
         const task = await getTaskById(id);
         if (!task) {
-            const error = new Error("No task with specified id was found")
+            const error = new Error(`No task with id:${id} was found`)
             error.status = 404;
             return next(error)
         }

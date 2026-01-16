@@ -20,9 +20,13 @@ router.get("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (
 router.get("/", authenticateJWT, athorizeRolePermissions, async (req, res, next) => {
     try {
         const tasks = await getAllTasks();
+        if (!tasks || tasks.length() === 0) { // if database is empty
+            const error = new Error("The database is empty");
+            error.status = 400;
+            next(error);
+        }
         console.log(tasks);
         res.status(200).json(tasks);
-
     } catch (error) {
         next(error);
     }
@@ -56,7 +60,7 @@ router.put("/:id", validateTask, validateParamId, authenticateJWT, authorizeTask
         const result = await updateTask(id, req.body);
 
         if (!result) {
-            const error = new Error("No task with specified id was found");
+            const error = new Error(`No task with id:${id} was found`);
             error.status = 404;
             throw error;
         }
