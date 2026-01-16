@@ -11,20 +11,6 @@ const validateLoginInput = (req, res, next) => {
     next();
 };
 
-// const validateUserId = (req, res, next) => {
-//     const { userId } = req.body;
-
-//     const parsedId = parseInt(userId);
-
-//     if (isNaN(parsedId) || parsedId <= 0) {
-//         return next({ status: 400, message: "body userId must be a positive valid integer" });
-//     }
-
-//     req.body.userId = parsedId;
-//     next();
-// };
-
-// Validation för PUT, DELETE, GET :id 
 const validateParamId = (req, res, next) => {
     const { id } = req.params;
     const parsedId = parseInt(id);
@@ -41,7 +27,9 @@ const validateTask = (req, res, next) => {
     const { title, description, status } = req.body;
 
     if (!title || title.trim().length === 0 || !description || !status) {
-        return next({ status: 400, message: "One or more required fields missing" });
+        const error = new Error("One or more required fields missing");
+        error.status = 400;
+        return next(error);
     }
     next();
 };

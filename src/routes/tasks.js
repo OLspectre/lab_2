@@ -4,34 +4,20 @@ import { validateTask, validateParamId } from "../middleswares/validation.js";
 // Database operations of tasks
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from "../models/taskModel.js";
 // Authentication
-import { authenticateJWT, authorizeTaskOwner } from "../middleswares/authentication.js";
+import { authenticateJWT, authorizeTaskOwner, athorizeRolePermissions } from "../middleswares/authentication.js";
 export const router = express.Router();
 
 
 router.get("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
-
     try {
-        const { id } = req.params;
-        console.log(id);
-
-        const task = await getTaskById(id);
-
-
-        if (!task) {
-            const error = new Error("No task with specified id was found")
-            error.status = 404;
-            next(error)
-        }
-        console.log(task);
-        res.status(200).json(task);
-
+        console.log(req.task);
+        res.status(200).json(req.task);
     } catch (error) {
         next(error);
     }
-
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", authenticateJWT, athorizeRolePermissions, async (req, res, next) => {
     try {
         const tasks = await getAllTasks();
         console.log(tasks);
@@ -58,7 +44,7 @@ router.post("/", authenticateJWT, validateTask, async (req, res, next) => {
 
         res.status(201).json({ message: "Successfully added a new task", task });
     } catch (error) {
-        next(error)
+        next(error);
     }
 });
 
@@ -84,17 +70,11 @@ router.put("/:id", validateTask, validateParamId, authenticateJWT, authorizeTask
 
 router.delete("/:id", validateParamId, authenticateJWT, authorizeTaskOwner, async (req, res, next) => {
     try {
-        const { id } = req.params;
-        const taskToDelete = await getTaskById(id);
-
-        if (!taskToDelete) {
-            const error = new Error("Task not found");
-            error.status = 404;
-            throw error;
-        }
-        await deleteTask(id);
-        res.status(200).json({ message: "Task deleted successfully" });
-
+        await deleteTask(req.task.id);
+        res.status(200).json({
+            message: "Task deleted successfully",
+            deletedTask: req.task
+        });
     } catch (error) {
         next(error)
     }

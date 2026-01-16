@@ -46,6 +46,7 @@ async function login(username, password) {
         id: user.id,
         iss: "Issue id",
         sub: username,
+        role: user.role,
         username,
     }
 

@@ -11,20 +11,13 @@ export function authenticateJWT(req, res, next) {
         return next(error);
     }
     const token = authHeader.replace("Bearer ", "");
-    console.log("TOKEN:", token);
 
     try {
-        console.log("Trying with token");
-
         const secretKey = process.env.SECRET_KEY;
-        console.log("secret key:", secretKey);
-
         const payload = jwt.verify(token.trim(), secretKey.trim());
-        console.log(payload);
 
         req.user = payload;
         console.log("User is authenticated correctly");
-
         next()
     } catch (err) { // TokenExpiredError
 
@@ -39,28 +32,39 @@ export function authenticateJWT(req, res, next) {
         next(err);
     }
 };
-
+// Checking if owner has authorization to access task
 export async function authorizeTaskOwner(req, res, next) {
-    console.log("trying to check ids");
-
     try {
         const { id } = req.params;
-        console.log("first ID:", id);
         const userId = req.user.id;
-        console.log("current user", userId);
-
 
         const task = await getTaskById(id);
-
+        if (!task) {
+            const error = new Error("No task with specified id was found")
+            error.status = 404;
+            return next(error)
+        }
         if (task.user_id !== userId) {
             const error = new Error("You are forbidden to access this task");
             error.status = 403;
-            throw error;
+            return next(error);
         }
-        console.log("ID of user matches task's user_id");
         req.task = task;
         next();
     } catch (error) {
         next(error);
     }
+};
+
+export async function athorizeRolePermissions(req, res, next) {
+    console.log("checking admin permissions");
+    const role = req.user.role;
+    console.log(role);
+
+    if (role !== "admin") {
+        const error = new Error("You don't have permission to access this resource");
+        error.status = 403;
+        next(error);
+    }
+    next();
 };
